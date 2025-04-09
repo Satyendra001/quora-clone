@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Question</h2>
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5>{{ question.text }}</h5>
+      <small>By {{ question.user.username }} on {{ question.created_at }}</small>
+    </div>
+  </div>
+
+  <h4>Answers</h4>
+  {% for answer in answers %}
+    <div class="card mb-2">
+      <div class="card-body">
+        {{ answer.text }}<br>
+        <small>By {{ answer.user.username }} | Likes: {{ answer.likes.count }}</small><br>
+        {% if user.is_authenticated and user not in answer.likes.all %}
+          <form method="post" action="{% url 'like_answer' answer.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button class="btn btn-sm btn-outline-success">Like</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  {% empty %}
+    <p>No answers yet.</p>
+  {% endfor %}
+
+  {% if user.is_authenticated %}
+    <h4 class="mt-4">Your Answer</h4>
+    <form method="post" action="{% url 'submit_answer' question.id %}">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Submit Answer</button>
+    </form>
+  {% else %}
+    <p><a href="{% url 'login' %}">Login</a> to answer.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  web:
+    container_name: quora_clone_web 
+    build: .
+    command: >
+      sh -c "python manage.py migrate &&
+             gunicorn quora_clone.wsgi:application --bind 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/src
